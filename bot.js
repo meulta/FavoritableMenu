@@ -156,4 +156,72 @@ bot.beginDialogAction('C1', '/C1');
 bot.beginDialogAction('C2', '/C2');
 bot.beginDialogAction('C3', '/C3');
 
+// ============
+// Helpers
+// ============
 
+const MENU_SCORING_NAME = "menuScoring";
+
+var setMenuScore = (session, actionname, actionlabel) => {
+    let userData = session.userData;
+
+    if(!userData[MENU_SCORING_NAME]){
+        userData[MENU_SCORING_NAME] = [];
+    }
+
+    let found = false;
+    for(let menuid in userData[MENU_SCORING_NAME])
+    {
+        if(userData[MENU_SCORING_NAME][menuid].actionname === actionname){
+            userData[MENU_SCORING_NAME][menuid].count ++;
+            found = true;
+        }
+    }
+
+    if(!found){
+        userData[MENU_SCORING_NAME].push(
+            {
+                actionname: actionname,
+                count: 1,
+                label: actionlabel
+            }
+        )
+    }
+};
+
+var getMenuScore = (session, actionname) => {
+    let userData = session.userData;
+
+    if(userData[MENU_SCORING_NAME] && userData[MENU_SCORING_NAME][actionname]){
+        return userData[MENU_SCORING_NAME][actionname];
+    }
+
+    return 0;
+};
+
+var getMenuOrderedByScoreDesc = (session) => {
+    let menuScore = session.userData[MENU_SCORING_NAME];
+    let sortedMenuList = [];
+
+    for(let originalid in menuScore){
+        menuButton = menuScore[originalid];
+
+        if(sortedMenuList.length === 0) {
+            sortedMenuList.push(menuButton);
+        }
+        else {
+            var insertAt = -1;
+            for(let sortedid in sortedMenuList){
+                sortedMenuButton = sortedMenuList[sortedid];
+                if(menuButton.count >= sortedMenuButton.count) {
+                    insertAt = sortedid;
+                    break;
+                }
+            }
+            if(insertAt === -1) 
+                sortedMenuList.push(menuButton);
+            else
+                sortedMenuList.splice(insertAt, 0, menuButton);
+        }
+    }    
+}
