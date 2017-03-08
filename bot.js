@@ -178,7 +178,7 @@ bot.beginDialogAction('C3', '/C3');
 // Helpers
 // ==========================================
 
-function createHeroCard(session, title, buttonNames) {
+var createHeroCard = (session, title, buttonNames) => {
     var buttons = [];
     buttonNames.forEach(function (buttonName) {
         buttons.push(
