@@ -67,7 +67,6 @@ bot.dialog('/favoriteMenu',
 
 bot.dialog('/A',
     (session, args) => {
-        session.send("In Dialog A");
         setMenuScore(session, "A");
         var buttons = [];
         var card = createHeroCard(session, "Dialog A", ["A1", "A2", "A3"]);
@@ -80,7 +79,6 @@ bot.dialog('/A',
 
 bot.dialog('/B',
     (session, args) => {
-        session.send("In Dialog A");
         setMenuScore(session, "B");
         var buttons = [];
         var card = createHeroCard(session, "Dialog B", ["B1", "B2", "B3"]);
@@ -93,7 +91,6 @@ bot.dialog('/B',
 
 bot.dialog('/C',
     (session, args) => {
-        session.send("In Dialog A");
         setMenuScore(session, "C");
         var buttons = [];
         var card = createHeroCard(session, "Dialog C", ["C1", "C2", "C3"]);
