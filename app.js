@@ -34,7 +34,7 @@ bot.dialog('/',
 bot.dialog('/topLevelMenu',
     (session, args) => {
         var buttons = [];
-        var card = createHeroCard(session, "Top Level", ["A", "B", "C"]);
+        var card = createHeroCard(session, "Top Level Dialog", ["A", "B", "C"]);
 
         var msg = new builder.Message(session)
             .textFormat(builder.TextFormat.xml)
