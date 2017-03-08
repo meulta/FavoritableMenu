@@ -7,7 +7,7 @@ var builder = require('botbuilder');
 
 // Setup Restify Server
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
+server.listen(process.env.port || process.env.PORT || 3978, () => {
     console.log('%s listening to %s', server.name, server.url);
 });
 
@@ -25,14 +25,14 @@ server.post('/api/messages', connector.listen());
 //=========================================================
 
 bot.dialog('/',
-    function (session) {
+    session => {
         session.beginDialog("/topLevelMenu");
         session.beginDialog("/favoriteMenu");
     }
 );
 
 bot.dialog('/topLevelMenu',
-    function (session, args) {
+    (session, args) => {
         var buttons = [];
         var card = createHeroCard(session, "Top Level", ["A", "B", "C"]);
 
@@ -44,12 +44,12 @@ bot.dialog('/topLevelMenu',
 );
 
 bot.dialog('/favoriteMenu',
-    function (session, args){
+    (session, args) => {
         var orderedMenu = getMenuOrderedByScoreDesc(session, 3);
 
-        if(orderedMenu && orderedMenu.length > 0){
+        if (orderedMenu && orderedMenu.length > 0) {
             var buttons = [];
-            orderedMenu.forEach(function(menu) {
+            orderedMenu.forEach(menu => {
                 buttons.push(menu.actionname);
             });
             var card = createHeroCard(session, "Favorite actions", buttons);
@@ -59,14 +59,14 @@ bot.dialog('/favoriteMenu',
                 .attachments([card]);
             session.endDialog(msg);
         }
-        else{
+        else {
             session.endDialog();
         }
     }
 )
 
 bot.dialog('/A',
-    function (session, args) {
+    (session, args) => {
         session.send("In Dialog A");
         setMenuScore(session, "A");
         var buttons = [];
@@ -79,7 +79,7 @@ bot.dialog('/A',
 );
 
 bot.dialog('/B',
-    function (session, args) {
+    (session, args) => {
         session.send("In Dialog A");
         setMenuScore(session, "B");
         var buttons = [];
@@ -92,7 +92,7 @@ bot.dialog('/B',
 );
 
 bot.dialog('/C',
-    function (session, args) {
+    (session, args) => {
         session.send("In Dialog A");
         setMenuScore(session, "C");
         var buttons = [];
@@ -105,55 +105,55 @@ bot.dialog('/C',
 );
 
 bot.dialog('/A1',
-    function (session) {
+    session => {
         session.endDialog("In dialog A1");
         setMenuScore(session, "A1");
     });
 
 bot.dialog('/A2',
-    function (session) {
+    session => {
         session.endDialog("In dialog A2");
         setMenuScore(session, "A2");
     });
 
 bot.dialog('/A3',
-    function (session) {
+    session => {
         session.endDialog("In dialog A3");
         setMenuScore(session, "A3");
     });
 
 bot.dialog('/B1',
-    function (session) {
+    session => {
         session.endDialog("In dialog B1");
         setMenuScore(session, "B1");
     });
 
 bot.dialog('/B2',
-    function (session) {
+    session => {
         session.endDialog("In dialog B2");
         setMenuScore(session, "B2");
     });
 
 bot.dialog('/B3',
-    function (session) {
+    session => {
         session.endDialog("In dialog B3");
         setMenuScore(session, "B3");
     });
 
 bot.dialog('/C1',
-    function (session) {
+    session => {
         session.endDialog("In dialog C1");
         setMenuScore(session, "C1");
     });
 
 bot.dialog('/C2',
-    function (session) {
+    session => {
         session.endDialog("In dialog C2");
         setMenuScore(session, "C2");
     });
 
 bot.dialog('/C3',
-    function (session) {
+    session => {
         session.endDialog("In dialog C3");
         setMenuScore(session, "C3");
     });
@@ -180,7 +180,7 @@ bot.beginDialogAction('C3', '/C3');
 
 var createHeroCard = (session, title, buttonNames) => {
     var buttons = [];
-    buttonNames.forEach(function (buttonName) {
+    buttonNames.forEach(buttonName => {
         buttons.push(
             builder.CardAction
                 .dialogAction(session, buttonName, null, "Intent " + buttonName)
@@ -196,20 +196,19 @@ const MENU_SCORING_NAME = "menuScoring";
 var setMenuScore = (session, actionname, actionlabel) => {
     let userData = session.userData;
 
-    if(!userData[MENU_SCORING_NAME]){
+    if (!userData[MENU_SCORING_NAME]) {
         userData[MENU_SCORING_NAME] = [];
     }
 
     let found = false;
-    for(let menuid in userData[MENU_SCORING_NAME])
-    {
-        if(userData[MENU_SCORING_NAME][menuid].actionname === actionname){
-            userData[MENU_SCORING_NAME][menuid].count ++;
+    for (let menuid in userData[MENU_SCORING_NAME]) {
+        if (userData[MENU_SCORING_NAME][menuid].actionname === actionname) {
+            userData[MENU_SCORING_NAME][menuid].count++;
             found = true;
         }
     }
 
-    if(!found){
+    if (!found) {
         userData[MENU_SCORING_NAME].push(
             {
                 actionname: actionname,
@@ -223,7 +222,7 @@ var setMenuScore = (session, actionname, actionlabel) => {
 var getMenuScore = (session, actionname) => {
     let userData = session.userData;
 
-    if(userData[MENU_SCORING_NAME] && userData[MENU_SCORING_NAME][actionname]){
+    if (userData[MENU_SCORING_NAME] && userData[MENU_SCORING_NAME][actionname]) {
         return userData[MENU_SCORING_NAME][actionname];
     }
 
@@ -231,35 +230,35 @@ var getMenuScore = (session, actionname) => {
 };
 
 var getMenuOrderedByScoreDesc = (session, trigger) => {
-    if(trigger == undefined) 
+    if (trigger == undefined)
         trigger = 0;
 
     let menuScore = session.userData[MENU_SCORING_NAME];
     let sortedMenuList = [];
 
-    for(let originalid in menuScore){
+    for (let originalid in menuScore) {
         menuButton = menuScore[originalid];
 
-        if(menuButton.count < trigger) continue;
+        if (menuButton.count < trigger) continue;
 
-        if(sortedMenuList.length === 0) {
+        if (sortedMenuList.length === 0) {
             sortedMenuList.push(menuButton);
         }
         else {
             var insertAt = -1;
-            for(let sortedid in sortedMenuList){
+            for (let sortedid in sortedMenuList) {
                 sortedMenuButton = sortedMenuList[sortedid];
-                if(menuButton.count >= sortedMenuButton.count) {
+                if (menuButton.count >= sortedMenuButton.count) {
                     insertAt = sortedid;
                     break;
                 }
             }
-            if(insertAt === -1) 
+            if (insertAt === -1)
                 sortedMenuList.push(menuButton);
             else
                 sortedMenuList.splice(insertAt, 0, menuButton);
         }
-    } 
+    }
 
-    return sortedMenuList;   
+    return sortedMenuList;
 }
