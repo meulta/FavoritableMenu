@@ -45,7 +45,7 @@ bot.dialog('/topLevelMenu',
 
 bot.dialog('/favoriteMenu',
     function (session, args){
-        var orderedMenu = getMenuOrderedByScoreDesc(session);
+        var orderedMenu = getMenuOrderedByScoreDesc(session, 3);
 
         if(orderedMenu && orderedMenu.length > 0){
             var buttons = [];
@@ -230,12 +230,17 @@ var getMenuScore = (session, actionname) => {
     return 0;
 };
 
-var getMenuOrderedByScoreDesc = (session) => {
+var getMenuOrderedByScoreDesc = (session, trigger) => {
+    if(trigger == undefined) 
+        trigger = 0;
+
     let menuScore = session.userData[MENU_SCORING_NAME];
     let sortedMenuList = [];
 
     for(let originalid in menuScore){
         menuButton = menuScore[originalid];
+
+        if(menuButton.count < trigger) continue;
 
         if(sortedMenuList.length === 0) {
             sortedMenuList.push(menuButton);
