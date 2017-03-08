@@ -21,29 +21,13 @@ var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
 //=========================================================
-// Helpers
-//=========================================================
-
-function createHeroCard(session, title, buttonNames) {
-    var buttons = [];
-    buttonNames.forEach(function (buttonName) {
-        buttons.push(
-            builder.CardAction
-                .dialogAction(session, buttonName, null, "Intent " + buttonName)
-        )
-    })
-    return new builder.HeroCard(session)
-        .title(title)
-        .buttons(buttons);
-}
-
-//=========================================================
 // Bot Dialogs
 //=========================================================
 
 bot.dialog('/',
     function (session) {
         session.beginDialog("/topLevelMenu");
+        session.beginDialog("/favoriteMenu");
     }
 );
 
@@ -59,9 +43,32 @@ bot.dialog('/topLevelMenu',
     }
 );
 
+bot.dialog('/favoriteMenu',
+    function (session, args){
+        var orderedMenu = getMenuOrderedByScoreDesc(session);
+
+        if(orderedMenu && orderedMenu.length > 0){
+            var buttons = [];
+            orderedMenu.forEach(function(menu) {
+                buttons.push(menu.actionname);
+            });
+            var card = createHeroCard(session, "Favorite actions", buttons);
+
+            var msg = new builder.Message(session)
+                .textFormat(builder.TextFormat.xml)
+                .attachments([card]);
+            session.endDialog(msg);
+        }
+        else{
+            session.endDialog();
+        }
+    }
+)
+
 bot.dialog('/A',
     function (session, args) {
         session.send("In Dialog A");
+        setMenuScore(session, "A");
         var buttons = [];
         var card = createHeroCard(session, "Dialog A", ["A1", "A2", "A3"]);
         var msg = new builder.Message(session)
@@ -74,6 +81,7 @@ bot.dialog('/A',
 bot.dialog('/B',
     function (session, args) {
         session.send("In Dialog A");
+        setMenuScore(session, "B");
         var buttons = [];
         var card = createHeroCard(session, "Dialog B", ["B1", "B2", "B3"]);
         var msg = new builder.Message(session)
@@ -86,6 +94,7 @@ bot.dialog('/B',
 bot.dialog('/C',
     function (session, args) {
         session.send("In Dialog A");
+        setMenuScore(session, "C");
         var buttons = [];
         var card = createHeroCard(session, "Dialog C", ["C1", "C2", "C3"]);
         var msg = new builder.Message(session)
@@ -98,46 +107,55 @@ bot.dialog('/C',
 bot.dialog('/A1',
     function (session) {
         session.endDialog("In dialog A1");
+        setMenuScore(session, "A1");
     });
 
 bot.dialog('/A2',
     function (session) {
         session.endDialog("In dialog A2");
+        setMenuScore(session, "A2");
     });
 
 bot.dialog('/A3',
     function (session) {
         session.endDialog("In dialog A3");
+        setMenuScore(session, "A3");
     });
 
 bot.dialog('/B1',
     function (session) {
         session.endDialog("In dialog B1");
+        setMenuScore(session, "B1");
     });
 
 bot.dialog('/B2',
     function (session) {
         session.endDialog("In dialog B2");
+        setMenuScore(session, "B2");
     });
 
 bot.dialog('/B3',
     function (session) {
         session.endDialog("In dialog B3");
+        setMenuScore(session, "B3");
     });
 
 bot.dialog('/C1',
     function (session) {
         session.endDialog("In dialog C1");
+        setMenuScore(session, "C1");
     });
 
 bot.dialog('/C2',
     function (session) {
         session.endDialog("In dialog C2");
+        setMenuScore(session, "C2");
     });
 
 bot.dialog('/C3',
     function (session) {
         session.endDialog("In dialog C3");
+        setMenuScore(session, "C3");
     });
 
 // No 'matches' option means that these actions can only be triggered by buttons
@@ -156,9 +174,22 @@ bot.beginDialogAction('C1', '/C1');
 bot.beginDialogAction('C2', '/C2');
 bot.beginDialogAction('C3', '/C3');
 
-// ============
+// ==========================================
 // Helpers
-// ============
+// ==========================================
+
+function createHeroCard(session, title, buttonNames) {
+    var buttons = [];
+    buttonNames.forEach(function (buttonName) {
+        buttons.push(
+            builder.CardAction
+                .dialogAction(session, buttonName, null, "Intent " + buttonName)
+        )
+    })
+    return new builder.HeroCard(session)
+        .title(title)
+        .buttons(buttons);
+}
 
 const MENU_SCORING_NAME = "menuScoring";
 
@@ -223,5 +254,7 @@ var getMenuOrderedByScoreDesc = (session) => {
             else
                 sortedMenuList.splice(insertAt, 0, menuButton);
         }
-    }    
+    } 
+
+    return sortedMenuList;   
 }
