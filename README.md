@@ -6,8 +6,9 @@
 
 **How it works**: each time the user clicks on a button we increase the "weight" of this button on a dictionary in the UserData. We then use this to build an ordered Favorite menu with actions that has been clicked 3 times or more.
 
-# Test the sample:
+# Test the Javascript sample:
 - Clone this repo
+- Go the the **js** folder
 - Run **npm install**
 - Run **node bot.js**
 - Use the [bot fwk emulator](https://docs.botframework.com/en-us/tools/bot-framework-emulator/), say *hello*
